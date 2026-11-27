@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DGDat Date Lab Updater v3.0</title>
+<style>
+:root{color-scheme:dark;--bg:#091321;--panel:#132238;--line:#2d435e;--muted:#a6b7ca;--text:#eef5fc;--good:#5be0a4;--bad:#ff7e7e;--accent:#a8dcff;--warn:#ffd166}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#08111e,#10213a);color:var(--text);font:15px/1.5 "Segoe UI",Arial,sans-serif}
+main{max-width:1050px;margin:30px auto;padding:0 18px}header{margin-bottom:20px}.eyebrow{color:#88ceff;font-size:12px;font-weight:700;letter-spacing:1.5px}h1{font-size:clamp(26px,4vw,38px);margin:5px 0}.sub,.muted{color:var(--muted)}.panel{background:rgba(19,34,56,.97);border:1px solid var(--line);border-radius:15px;padding:19px;margin:14px 0;box-shadow:0 12px 35px #0004}h2{font-size:18px;margin:0 0 12px}
+.field{display:flex;flex-direction:column;gap:6px}label{font-size:13px;color:#cbd9e8}input[type=file],input[type=date]{background:#0a1728;border:1px solid #405b7b;border-radius:9px;color:var(--text);padding:11px;width:100%}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.status{padding:11px 13px;border-radius:9px;background:#0b1727;border:1px solid var(--line);margin-top:12px;white-space:pre-wrap;overflow-wrap:anywhere}.good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}.kv{display:grid;grid-template-columns:175px 1fr;gap:5px 12px;font-size:14px}.kv div:nth-child(odd){color:var(--muted)}.mono{font-family:Consolas,monospace;overflow-wrap:anywhere}
+.dategrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}.datebox{background:#0c1a2b;border:1px solid var(--line);border-radius:10px;padding:11px}.datebox b{display:block;color:var(--accent);font-size:13px}.datebox span{font:14px Consolas,monospace}
+button{background:#234362;color:var(--text);border:1px solid #4d7196;padding:11px 15px;border-radius:9px;font-weight:700;cursor:pointer}button.primary{background:#bce5ff;color:#0c2237;border-color:#bce5ff}button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:13px}
+.checkline{display:flex;align-items:flex-start;gap:9px;margin-top:13px;font-size:13px;color:#cad8e8}.checkline input{margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}td,th{border-bottom:1px solid var(--line);padding:7px;text-align:left}th{color:var(--muted)}.tablewrap{overflow:auto}
+ul{padding-left:20px;color:var(--muted)}footer{color:var(--muted);font-size:12px;margin:20px 0 35px}
+.hidden{display:none}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.dategrid{grid-template-columns:1fr 1fr}.kv{grid-template-columns:125px 1fr}}
+
+.donation{margin:0 0 20px;padding:20px 22px;border:1px solid #8b6b35;border-radius:16px;background:linear-gradient(135deg,#302719 0%,#1c2633 100%);box-shadow:0 10px 28px rgba(0,0,0,.18)}
+.donation-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px}
+.donation h2{font-size:20px;line-height:1.25;margin:0;color:#ffe0a3}
+.donation p{margin:8px 0;color:#e4e8ee;line-height:1.55;font-size:14px}
+.donation .donation-lead{font-weight:750;color:#fff;font-size:15px}
+.donation-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.donation-btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 17px;border-radius:10px;background:#e6a93b;color:#241b0d!important;text-decoration:none;font-weight:800;border:1px solid #f3c56d;transition:filter .15s,transform .15s}
+.donation-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.donation-note{font-size:12px!important;color:#b8c3d0!important;margin-top:11px!important}
+</style></head>
+<body><main>
+<section class="donation" aria-label="Поддержать проект донатом">
+  <div class="donation-head"><h2>HELP ME PLEASE · DONATION</h2></div>
+  <p class="donation-lead">Кто может — поддержите проект донатом.</p>
+  <p>Скоро у меня свадьба, поэтому я выкладываю эту утилиту в общий доступ. Если у вас есть возможность, поддержите меня, развитие проекта и создание новых утилит.</p>
+  <p>Следующая цель — сделать актуализацию всех мест из Яндекса. Для этой работы очень пригодится ваша поддержка.</p>
+  <p>Спасибо всем, кто откликнулся и помогает развитию проекта!</p>
+  <div class="donation-actions">
+    <a class="donation-btn" href="https://www.donationalerts.com/r/kronchik_1209" target="_blank" rel="noopener noreferrer">Поддержать донатом</a>
+    <a class="donation-btn" href="https://www.donationalerts.com/r/kronchik_1209" target="_blank" rel="noopener noreferrer">HELP ME PLEASE</a>
+  </div>
+  <p class="donation-note">Донат добровольный. Утилита остаётся доступной для общего использования.</p>
+</section>
+
+<header><div class="eyebrow">OFFLINE · GDF HEADER DISCOVERY LABORATORY</div><h1>DGDat Date Lab Updater <span style="color:var(--accent)">v3.0</span></h1>
+<div class="sub">Автоматически ищет CRC-заголовок и четыре согласованных поля дат в поддерживаемой структуре GDF. Работает с крупными файлами потоково: в память загружается только небольшой начальный блок.</div></header>
+
+<section class="panel">
+<h2>1. Выбрать базу</h2>
+<div class="field"><label for="file">Исходный файл .dgdat</label><input id="file" type="file" accept=".dgdat,*/*"></div>
+<div id="load" class="status">Выбери исходную базу. Оригинал не изменяется.</div>
+</section>
+
+<section class="panel">
+<h2>2. Автоматическое обнаружение структуры</h2>
+<div id="meta" class="kv"><div>Формат</div><div>Ожидает файл</div></div>
+<div id="crc" class="status">Контрольные суммы не проверялись.</div>
+<h3 style="margin:15px 0 5px;font-size:15px">Найденные C0 + uint16 кандидаты</h3>
+<div id="candidateTable" class="tablewrap muted">Нет данных.</div>
+<div id="roles" class="dategrid"></div>
+<div id="discovery" class="status">После загрузки здесь появятся найденные блоки и уровень уверенности.</div>
+</section>
+
+<section class="panel">
+<h2>3. Новая дата выпуска</h2>
+<div class="grid">
+<div class="field"><label for="newDate">Новая базовая дата bd</label><input id="newDate" type="date" disabled></div>
+<div class="status" style="margin:0">Остальные три даты сдвигаются на сохранённые интервалы исходной базы: uad, ewd и ed.</div>
+</div>
+<label class="checkline"><input type="checkbox" id="confirm" disabled><span>Подтверждаю автоматически найденное распределение дат: bd — самая ранняя, uad — следующая, ewd — предпоследняя, ed — самая поздняя. Разрешаю сформировать отдельную лабораторную копию.</span></label>
+<div id="preview" class="status">Сначала выбери базу, прошедшую проверку.</div>
+<div class="actions"><button id="build" class="primary" disabled>Сформировать новую DGDat</button><button id="saveProfile" disabled>Скачать профиль JSON</button><button id="saveReport" disabled>Скачать отчёт JSON</button></div>
+<div id="result" class="status">Файл не сформирован.</div>
+</section>
+
+<section class="panel">
+<h2>4. Что умеет автоопределение</h2>
+<ul>
+<li>Проверяет GDF-сигнатуру и две CRC32 из общей схемы заголовка.</li>
+<li>Самостоятельно находит конец CRC-защищённого блока перебором границы с инкрементальным расчётом CRC.</li>
+<li>Находит все маркеры C0 + uint16 внутри защищённого блока и отбирает единственный кластер из четырёх дат.</li>
+<li>Сверяет временные интервалы и показывает, какие байтовые смещения будут изменены.</li>
+<li>Изменяет только четыре подтверждённых поля дат и два поля CRC. Остальные байты заголовка и payload копируются без изменений.</li>
+<li>Если профиль неоднозначен или CRC не подтверждает структуру — останавливается без экспорта.</li>
+</ul>
+<div class="status warn">Ограничение: это автоопределение для семейства GDF с CRC-полями по общим смещениям 0x0E и 0x15 и кодировкой дат C0 + uint16 BE. Другие варианты DGDat могут использовать иную структуру. Для них утилита откажется от автоматического изменения; это не универсальная спецификация всех версий 2ГИС.</div>
+</section>
+<footer>Локальная обработка в браузере. Для файлов 350+ МБ используется File.slice()/Blob без чтения всего файла в оперативную память. Меняются метаданные даты, не картографическое содержимое.</footer>
+</main>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const EPOCH=Date.UTC(1899,11,30);
+const SCAN_LIMIT=0x10000;
+let sourceFile=null,header=null,found=null,lastReport=null;
+function crcTable(){const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;}
+const CT=crcTable();
+function crcByte(state,b){return (CT[(state^b)&255]^(state>>>8))>>>0;}
+function crc32(a,start=0,end=a.length){let c=0xFFFFFFFF;for(let i=start;i<end;i++)c=crcByte(c,a[i]);return (c^0xFFFFFFFF)>>>0;}
+function u32be(a,o){return (((a[o]*0x1000000)+(a[o+1]<<16)+(a[o+2]<<8)+a[o+3])>>>0);}
+function put32be(a,o,n){a[o]=(n>>>24)&255;a[o+1]=(n>>>16)&255;a[o+2]=(n>>>8)&255;a[o+3]=n&255;}
+function serialISO(n){const d=new Date(EPOCH+n*86400000);return `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}-${String(d.getUTCDate()).padStart(2,'0')}`;}
+function isoSerial(s){const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s);if(!m)throw Error('Некорректная дата.');const y=+m[1],mo=+m[2],da=+m[3],ms=Date.UTC(y,mo-1,da),d=new Date(ms);if(d.getUTCFullYear()!==y||d.getUTCMonth()!==mo-1||d.getUTCDate()!==da)throw Error('Некорректная календарная дата.');const n=Math.round((ms-EPOCH)/86400000);if(n<0||n>65535)throw Error('Дата вне диапазона uint16.');return n;}
+function h(n){return '0x'+n.toString(16).toUpperCase();}
+function h8(n){return '0x'+n.toString(16).toUpperCase().padStart(8,'0');}
+function setStatus(el,msg,kind=''){el.className='status'+(kind?' '+kind:'');el.textContent=msg;}
+function detectCrcEnd(a){
+ if(a.length<0x100)throw Error('Начальный блок слишком короткий.');
+ const storedOuter=u32be(a,0x0E),storedInner=u32be(a,0x15);
+ let outer=0xFFFFFFFF,inner=0xFFFFFFFF,matches=[];
+ const max=Math.min(a.length,SCAN_LIMIT);
+ for(let end=0x13;end<=max;end++){
+  const b=a[end-1];
+  outer=crcByte(outer,b);
+  if(end>0x19)inner=crcByte(inner,b);
+  if(end>=0x100&&((outer^0xFFFFFFFF)>>>0)===storedOuter&&((inner^0xFFFFFFFF)>>>0)===storedInner){
+    matches.push(end);
+    if(matches.length>1)break;
+  }
+ }
+ if(matches.length!==1)throw Error(matches.length===0?
+  `Не найдена единственная граница CRC в первых ${max} байтах. Возможен другой профиль GDF или повреждённый файл.`:
+  'Найдено несколько границ CRC. Автообнаружение неоднозначно, изменение запрещено.');
+ const end=matches[0];
+ return {end,storedOuter,storedInner,outerCalc:crc32(a,0x12,end),innerCalc:crc32(a,0x19,end)};
+}
+function findDates(a,end){
+ const byValue=new Map();
+ for(let i=0x19;i+2<end;i++){
+  if(a[i]!==0xC0)continue;
+  const n=(a[i+1]<<8)|a[i+2];
+  // Plausible date range 2000-01-01 through 2100-01-01.
+  if(n<36526||n>73050)continue;
+  if(!byValue.has(n))byValue.set(n,[]);
+  byValue.get(n).push(i);
+ }
+ const all=[...byValue.entries()].sort((x,y)=>x[0]-y[0]).map(([serial,offsets])=>({serial,offsets}));
+ const windows=[];
+ for(let i=0;i+3<all.length;i++){
+  const w=all.slice(i,i+4);
+  if(w[3].serial-w[0].serial<=550)windows.push(w);
+ }
+ if(windows.length!==1)throw Object.assign(new Error(windows.length===0?
+  'Не найден однозначный кластер из четырёх дат в пределах 550 дней. Автоизменение запрещено.':
+  'Обнаружено несколько возможных кластеров дат. Автоизменение запрещено.'),{candidates:all});
+ const q=windows[0];
+ if(q.some(x=>x.offsets.length!==1))throw Object.assign(new Error('Одно или несколько значений даты встречаются несколько раз. Нельзя однозначно определить поля.'),{candidates:all});
+ return {all,roles:{bd:q[0],uad:q[1],ewd:q[2],ed:q[3]}};
+}
+function discover(a,fileSize){
+ if(a[0]!==0x07||a[1]!==0x47||a[2]!==0x44||a[3]!==0x46)throw Error('Нет сигнатуры GDF 07 47 44 46.');
+ const crc=detectCrcEnd(a);
+ if(crc.storedInner!==crc.innerCalc||crc.storedOuter!==crc.outerCalc)throw Error('CRC входного заголовка не совпадает.');
+ const dates=findDates(a,crc.end);
+ const ds=dates.roles;
+ const deltas={uad:ds.uad.serial-ds.bd.serial,ewd:ds.ewd.serial-ds.bd.serial,ed:ds.ed.serial-ds.bd.serial};
+ if(deltas.uad<0||deltas.ewd<0||deltas.ed<0||deltas.ed>550)throw Error('Неподдерживаемые интервалы дат.');
+ return {crc,dates:ds,allCandidates:dates.all,deltas,headerEnd:crc.end,fileSize};
+}
+function render(){
+ const p=found;
+ $('meta').innerHTML=`<div>Формат</div><div><b class="good">GDF · автообнаружение</b></div>
+ <div>Размер файла</div><div>${sourceFile.size.toLocaleString('ru-RU')} байт</div>
+ <div>Граница CRC</div><div class="mono">${h(p.headerEnd)} (exclusive)</div>
+ <div>Поля CRC</div><div class="mono">inner 0x15 · outer 0x0E</div>
+ <div>Кодирование</div><div class="mono">C0 + uint16 big-endian · epoch 1899-12-30</div>`;
+ const pdate=p.dates;
+ const roles=['bd','uad','ewd','ed'];
+ $('roles').innerHTML=roles.map(k=>`<div class="datebox"><b>${k} · ${h(pdate[k].offsets[0])}</b><span>${serialISO(pdate[k].serial)}</span><div class="muted">serial ${pdate[k].serial}</div></div>`).join('');
+ const rows=p.allCandidates.map(x=>`<tr><td class="mono">${h(x.offsets[0])}${x.offsets.length>1?' (×'+x.offsets.length+')':''}</td><td>${serialISO(x.serial)}</td><td class="mono">${x.serial}</td><td>${roles.find(k=>pdate[k].serial===x.serial)||'служебный / вне выбранного кластера'}</td></tr>`).join('');
+ $('candidateTable').innerHTML='<table><thead><tr><th>Offset</th><th>Дата</th><th>Serial</th><th>Роль</th></tr></thead><tbody>'+rows+'</tbody></table>';
+ setStatus($('crc'),`CRC inner: ${h8(p.crc.storedInner)} = ${h8(p.crc.innerCalc)} · PASS\nCRC outer: ${h8(p.crc.storedOuter)} = ${h8(p.crc.outerCalc)} · PASS\nНайдено ${p.allCandidates.length} уникальных значений C0 + uint16; единственный кластер из четырёх дат подтверждён.`,'good');
+ setStatus($('discovery'),`AUTO DISCOVERY: PASS\nbd=${h(pdate.bd.offsets[0])}, uad=${h(pdate.uad.offsets[0])}, ewd=${h(pdate.ewd.offsets[0])}, ed=${h(pdate.ed.offsets[0])}\nСохранённые интервалы: uad +${p.deltas.uad}, ewd +${p.deltas.ewd}, ed +${p.deltas.ed} дней.\nОценка: однозначная эвристическая карта полей; перед изменением требуется подтверждение пользователя.`,'good');
+ $('newDate').value=serialISO(pdate.bd.serial);$('newDate').disabled=false;$('confirm').disabled=false;$('confirm').checked=false;$('build').disabled=true;$('saveProfile').disabled=false;$('saveReport').disabled=false;updatePreview();
+}
+function updatePreview(){
+ if(!found)return;
+ try{
+  const base=isoSerial($('newDate').value),d=found.deltas;
+  const p={bd:base,uad:base+d.uad,ewd:base+d.ewd,ed:base+d.ed};
+  if(Object.values(p).some(x=>x<0||x>65535))throw Error('Одна из дат выходит за uint16.');
+  $('preview').textContent=`bd: ${serialISO(p.bd)}\nuad: ${serialISO(p.uad)} (+${d.uad} дней)\newd: ${serialISO(p.ewd)} (+${d.ewd} дней)\ned: ${serialISO(p.ed)} (+${d.ed} дней)`;
+  $('build').disabled=!$('confirm').checked;
+ }catch(e){setStatus($('preview'),e.message,'bad');$('build').disabled=true;}
+}
+$('newDate').addEventListener('change',updatePreview);
+$('confirm').addEventListener('change',updatePreview);
+$('file').addEventListener('change',async ev=>{
+ sourceFile=ev.target.files?.[0]||null;header=null;found=null;lastReport=null;
+ $('build').disabled=true;$('saveProfile').disabled=true;$('saveReport').disabled=true;$('confirm').disabled=true;$('newDate').disabled=true;$('roles').innerHTML='';$('candidateTable').textContent='Нет данных.';
+ if(!sourceFile){setStatus($('load'),'Файл не выбран.');return;}
+ try{
+  if(sourceFile.size<0x100)throw Error('Файл слишком мал.');
+  const scanBytes=Math.min(SCAN_LIMIT,sourceFile.size);
+  header=new Uint8Array(await sourceFile.slice(0,scanBytes).arrayBuffer());
+  found=discover(header,sourceFile.size);
+  setStatus($('load'),`Файл: ${sourceFile.name}\nРазмер: ${sourceFile.size.toLocaleString('ru-RU')} байт\nВ память загружено ${scanBytes.toLocaleString('ru-RU')} байт из начала файла. Исходник не изменялся.`,'good');
+  render();
+ }catch(e){
+  found=null;const details=e.candidates?'\n\nКандидаты:\n'+e.candidates.map(x=>`${h(x.offsets[0])} = ${serialISO(x.serial)} (${x.offsets.length} вх.)`).join('\n'):'';
+  setStatus($('load'),'READ ONLY — файл не принят\n'+e.message+details,'bad');
+  $('meta').innerHTML='<div>Формат</div><div class="bad">Не подтверждён</div>';
+  setStatus($('discovery'),'Утилита не будет менять неизвестную или неоднозначную структуру.','bad');
+ }
+});
+function makeResult(){
+ if(!found||!sourceFile)throw Error('Нет проверенного файла.');
+ if(!$('confirm').checked)throw Error('Сначала подтверди карту найденных полей.');
+ const c=found.crc,end=found.headerEnd,p=found.dates,base=isoSerial($('newDate').value),d=found.deltas;
+ const newSerial={bd:base,uad:base+d.uad,ewd:base+d.ewd,ed:base+d.ed};
+ const next=header.slice(0,end);
+ const offsets={bd:p.bd.offsets[0],uad:p.uad.offsets[0],ewd:p.ewd.offsets[0],ed:p.ed.offsets[0]};
+ for(const [k,o] of Object.entries(offsets)){const n=newSerial[k];next[o]=0xC0;next[o+1]=(n>>>8)&255;next[o+2]=n&255;}
+ const allowed=new Set([0x0E,0x0F,0x10,0x11,0x15,0x16,0x17,0x18]);
+ for(const o of Object.values(offsets))for(let i=o;i<o+3;i++)allowed.add(i);
+ // Recalculate nested CRC fields in dependency order.
+ const inner=crc32(next,0x19,end);put32be(next,0x15,inner);
+ const outer=crc32(next,0x12,end);put32be(next,0x0E,outer);
+ if(u32be(next,0x15)!==crc32(next,0x19,end))throw Error('Выходная inner CRC не совпала.');
+ if(u32be(next,0x0E)!==crc32(next,0x12,end))throw Error('Выходная outer CRC не совпала.');
+ for(const [k,o] of Object.entries(offsets))if(next[o]!==0xC0||((next[o+1]<<8)|next[o+2])!==newSerial[k])throw Error(`Обратная проверка даты ${k} не прошла.`);
+ for(let i=0;i<end;i++)if(!allowed.has(i)&&next[i]!==header[i])throw Error(`Неожиданное изменение по ${h(i)}.`);
+ const outBlob=new Blob([next,sourceFile.slice(end)],{type:'application/octet-stream'});
+ if(outBlob.size!==sourceFile.size)throw Error('Изменился размер итогового файла.');
+ const safe=sourceFile.name.replace(/\.dgdat$/i,'');
+ const outName=`${safe}_date_${$('newDate').value}.dgdat`;
+ const report={tool:'DGDat Date Lab Updater v3.0',createdAt:new Date().toISOString(),source:{name:sourceFile.name,size:sourceFile.size},output:{name:outName,size:outBlob.size},discovery:{method:'CRC pair range scan + unique four-date serial cluster',confidence:'unique candidate cluster; user confirmed role mapping',headerEnd:h(end),candidateCount:found.allCandidates.length,allCandidates:found.allCandidates.map(x=>({serial:x.serial,date:serialISO(x.serial),offsets:x.offsets.map(h)})),dateFields:Object.fromEntries(Object.entries(offsets).map(([k,o])=>[k,{offset:h(o),date:serialISO(newSerial[k]),serial:newSerial[k]}]))},preservedIntervals:d,crc:{algorithm:'CRC-32/IEEE',byteOrder:'big-endian',inner:{field:'0x15',range:`[0x19,${h(end)})`,value:h8(inner)},outer:{field:'0x0E',range:`[0x12,${h(end)})`,value:h8(outer)},order:'inner -> outer'},checks:{inputInnerCrc:'PASS',inputOuterCrc:'PASS',outputInnerCrc:'PASS',outputOuterCrc:'PASS',dateRoundTrip:'PASS',unapprovedHeaderChanges:'NONE',fileSizePreserved:true,payloadPreserved:true},limitations:['Automatic discovery only supports the common GDF envelope with CRC fields at 0x0E and 0x15 and date marker C0 + uint16 BE.','Date roles are inferred from the unique four-value cluster; user confirmation is required.','Unknown or ambiguous layouts are not modified.','Metadata dates do not update map content or road data.']};
+ return {blob:outBlob,name:outName,report,inner,outer,end};
+}
+$('build').addEventListener('click',()=>{
+ try{
+  const r=makeResult();lastReport=r.report;
+  const url=URL.createObjectURL(r.blob),a=document.createElement('a');a.href=url;a.download=r.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+  setStatus($('result'),`Сформировано: ${r.name}\nРазмер: ${r.blob.size.toLocaleString('ru-RU')} байт\nCRC inner ${h8(r.inner)} · PASS\nCRC outer ${h8(r.outer)} · PASS\nHeader end: ${h(r.end)}\nОстальной файл перенесён из оригинального File.slice() без изменений.`,'good');
+ }catch(e){setStatus($('result'),'ОШИБКА\n'+e.message,'bad');}
+});
+function downloadJson(name,obj){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);}
+$('saveReport').addEventListener('click',()=>{if(!lastReport){try{lastReport=makeResult().report;}catch(e){setStatus($('result'),e.message,'bad');return;}}downloadJson('DGDat_AutoDiscovery_Report.json',lastReport);});
+$('saveProfile').addEventListener('click',()=>{if(!found)return;const p={profileType:'GDF-auto-discovered',signature:'07 47 44 46',crc:{outerOffset:'0x0E',outerStart:'0x12',innerOffset:'0x15',innerStart:'0x19',end:h(found.headerEnd)},dates:Object.fromEntries(Object.entries(found.dates).map(([k,v])=>[k,{offset:h(v.offsets[0]),serial:v.serial,iso:serialISO(v.serial)}])),deltas:found.deltas,discoveryMethod:'CRC range pair + unique 4-date cluster'};downloadJson('DGDat_Discovered_Profile.json',p);});
+if(crc32(new TextEncoder().encode('123456789'))!==0xCBF43926)setStatus($('load'),'Внутренний CRC32 self-test не пройден. Обработка отключена.','bad');
+</script></body></html>
