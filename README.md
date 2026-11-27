@@ -1,185 +1,245 @@
 HELP ME PLEASE DONATION https://www.donationalerts.com/r/kronchik_1209 КТО МОЖЕТ ПОДДЕРЖИТЕ ДОНАТОМ https://www.donationalerts.com/r/kronchik_1209 У МЕНЯ СКОРО СВАДЬБА, ПОЭТОМУ ВЫКЛАДЫВАЮ В ОБЩИЙ ДОСТУП, А КТО СМОЖЕТ ПОДДЕРЖИТЕ МЕНЯ, ПРОЕКТ И РАЗВИТИЕ УТИЛИТ, ДАЛЕЕ ХОЧУ СДЕЛАТЬ АКТУАЛИЗАЦИЮ ИЗ ЯНДЕКСА ВСЕХ МЕСТ, НО НУЖНА ВАША ПОДДЕРЖКА. СПАСИБО ВСЕМ, КТО ОТКЛИКНУЛСЯ!
 
-2GIS-dgdat-updater-base
-Автономный анализатор заголовков GDF/DGDat и средство обновления даты метаданных с проверкой CRC32. Однофайловый HTML, без зависимостей.
+# DGDat Date Lab Updater
 
-DGDat Date Lab Updater
-Автономный анализатор заголовков GDF/DGDat и средство обновления даты метаданных — однофайловый HTML-инструмент без внешних зависимостей.
+**Offline GDF/DGDat header analyzer and metadata date updater — a single-file HTML tool with no external dependencies.**
 
-DGDat Date Lab Updater — это браузерная лабораторная утилита для изучения поддерживаемых заголовков GDF (.dgdat) , определения защищенной CRC области заголовка, поиска набора полей, похожих на даты, пересчета значений CRC32 в заголовке и экспорта отдельной измененной копии.
+DGDat Date Lab Updater is a browser-based laboratory utility for examining supported GDF (`.dgdat`) headers, identifying a CRC-protected header region, locating a set of date-like fields, recalculating header CRC32 values, and exporting a separate modified copy.
 
-Проект предназначен для изучения форматов, проведения воспроизводимых экспериментов и использования в образовательных целях. Он не загружает, не обновляет, не перестраивает и не проверяет фактическое содержимое карты.
+The project is intended for format research, reproducible experiments, and educational use. It does not download, update, rebuild, or validate the actual map content.
 
-Важно: изменение даты в заголовке базы данных не приводит к обновлению дорог, адресов, зданий, точек интереса и любых других картографических данных. Файл, дата в метаданных которого была изменена, не следует использовать в качестве актуальной карты или для оперативной навигации, диспетчеризации, реагирования на чрезвычайные ситуации или принятия других критически важных решений.
+> **Important:** Changing dates in a database header does not update roads, addresses, buildings, POIs, or any other map data. A file whose metadata date was changed must not be treated as a current map or used for operational navigation, dispatch, emergency response, or other safety-critical decisions.
 
-Статус проекта
-Текущая версия: 3.0
-Тип приложения: автономный HTML + ванильный JavaScript
-Зависимости: отсутствуют
-Доступ к сети: не требуется
-Этап сборки: отсутствует
-Обработка: локальная в браузере пользователя
-Входные данные: .dgdat файл
-Выходные данные: отдельный .dgdat файл, JSON-файл с обнаруженным профилем и JSON-файл с диагностическим отчетом
-Версия 3.0 поддерживает автоматическое обнаружение в рамках определенного семейства наблюдаемых заголовков GDF. Это не универсальный парсер для всех существующих и будущих форматов 2GIS/DGDat.
+## Project status
 
-Возможности
-1. Автоматическое определение границ заголовка
-Приложение:
+- Current version: **3.0**
+- Application type: standalone HTML + vanilla JavaScript
+- Dependencies: none
+- Network access: not required
+- Build step: none
+- Processing: local in the user's browser
+- Input: `.dgdat` file
+- Output: a separate `.dgdat` file, a discovered-profile JSON file, and a diagnostic report JSON file
 
-Проверяет сигнатуру GDF 07 47 44 46.
-Считывает сохраненные внешние и внутренние поля CRC32 по их наблюдаемым общим смещениям.
-Сканирует начало файла (до 64 КиБ) в поисках уникального конца заголовка, где оба вычисления CRC совпадают с сохраненными значениями.
-Отказывается продолжать работу, если не найдена уникальная граница или если совпадают несколько границ.
-В текущей реализации используются следующие распространенные расположения полей CRC:
+Version 3.0 supports automatic discovery within a **specific observed GDF header family**. It is not a universal parser for every historical or future 2GIS/DGDat format.
 
-Поле	Смещение	Входные данные CRC начинаются с
-Внешнего CRC32	0x0E	0x12
-Внутренний CRC32	0x15	0x19
-Обнаруженное конечное смещение является исключительным. В наблюдаемых эталонных образцах оно составляло 0x154 для Норильска 142/163 и 0x1A0 для Красноярска 250.0.0. Это эталонные наблюдения, а не жестко заданный список городов.
+## Features
 
-2. Поиск кандидатов в поле даты
-В области заголовка, защищенной CRC, приложение ищет значения, закодированные следующим образом:
+### 1. Automatic header-boundary discovery
 
+The application:
+
+1. Checks the GDF signature `07 47 44 46`.
+2. Reads the stored outer and inner CRC32 fields at their observed common offsets.
+3. Scans the beginning of the file (up to 64 KiB) for a unique header end where both CRC calculations match their stored values.
+4. Refuses to continue if no unique boundary is found or if multiple boundaries match.
+
+The current implementation assumes these common CRC field locations:
+
+| Field | Offset | CRC input begins at |
+|---|---:|---:|
+| Outer CRC32 | `0x0E` | `0x12` |
+| Inner CRC32 | `0x15` | `0x19` |
+
+The discovered end offset is exclusive. In observed reference samples it was `0x154` for Norilsk 142/163 and `0x1A0` for Krasnoyarsk 250.0.0. These are reference observations, not a hard-coded city list.
+
+### 2. Date-field candidate discovery
+
+Within the CRC-protected header region, the application looks for values encoded as:
+
+```text
 C0 + uint16 big-endian
-16-битное значение интерпретируется как порядковый номер дня относительно 1899-12-30.
+```
 
-Текущие правила поиска кандидатов:
+The 16-bit value is interpreted as a day serial relative to `1899-12-30`.
 
-Даты кандидатов ограничены диапазоном с 1 января 2000 года по 1 января 2100 года.
-Одинаковые порядковые номера группируются.
-Утилита ищет уникальный упорядоченный кластер из четырех различных значений даты, охватывающий период не более 550 дней.
-Роли определяются по возрастанию даты:
-bd — самая ранняя дата
-uad — следующая дата
-ewd — следующая дата
-ed — самая поздняя дата
-Каждое выбранное значение должно находиться ровно на одном байтовом смещении.
-Перед экспортом пользователь должен явно подтвердить предполагаемое сопоставление.
-Эти правила основаны на эвристическом анализе изученных образцов. Они не являются полной формальной спецификацией GDF.
+Current candidate-search rules:
 
-3. Пересчет CRC32
-Приложение использует CRC-32/IEEE (то же семейство CRC, которое обычно обозначается как zlib.crc32).
+- Candidate dates are limited to the range 2000-01-01 through 2100-01-01.
+- Equal serial values are grouped together.
+- The utility searches for a unique, ordered cluster of four different date values spanning no more than 550 days.
+- The roles are inferred by ascending date order:
+  - `bd` — earliest date
+  - `uad` — next date
+  - `ewd` — next date
+  - `ed` — latest date
+- Each selected value must occur at exactly one byte offset.
+- The user must explicitly confirm the inferred mapping before export.
 
-При изменении подтвержденного заголовка значения CRC пересчитываются в следующем порядке:
+These rules are heuristics based on the examined samples. They do not establish a complete formal specification of GDF.
 
-Внутренний CRC32.
-Внешний CRC32.
-Оба значения хранятся в порядке байтов с обратным порядком следования старших разрядов. При расчете внешнего CRC учитывается обновленное внутреннее поле CRC, поэтому порядок расчета имеет значение.
+### 3. CRC32 recalculation
 
-4. Отдельный выходной файл
-Исходный входной файл никогда не изменяется на месте.
+The application uses CRC-32/IEEE (the same CRC family commonly exposed as `zlib.crc32`).
 
-Приложение изменяет только:
+When a confirmed header is modified, CRC values are recalculated in this order:
 
-четыре выбранных поля с датами;
-два поля CRC32.
-Оно проверяет, что:
+1. Inner CRC32.
+2. Outer CRC32.
 
-выходные поля CRC соответствуют новым расчетам;
-значения дат можно считать обратно;
-ни один другой байт в пределах обнаруженной границы заголовка не был изменен;
-размер выходного файла соответствует размеру входного.
-Результат формируется в виде нового Blob из измененного заголовка и File.slice() исходной полезной нагрузки. Полезная нагрузка карты копируется без изменений; она не распаковывается, не декодируется и не перестраивается.
+Both values are stored in big-endian byte order. The outer CRC calculation includes the updated inner CRC field, which is why calculation order matters.
 
-5. Обработка больших файлов
-Приложение считывает только начало файла (до 64 КиБ) для обнаружения и редактирования заголовка.
+### 4. Separate output file
 
-Оставшееся содержимое файла передается как срез исходного File, а не загружается в один большой JavaScript ArrayBuffer. Это снижает нагрузку на память при работе с большими .dgdat файлами.
+The original input file is never modified in place.
 
-Фактические ограничения на загрузку в браузере и операционной системе по-прежнему действуют.
+The application changes only:
 
-6. Экспорт диагностических данных
-Утилита может экспортировать:
+- the four selected date fields;
+- the two CRC32 fields.
 
-файл JSON с обнаруженным профилем, содержащий смещения, порядковые номера дат, дельты и границы CRC;
-файл JSON с отчетом, описывающий обнаруженные входные и выходные метаданные, сопоставление дат, диапазоны CRC и выполненные проверки.
-Быстрый старт
-СкачатьDGDat_Date_Lab_Updater_v3.html.
-Откройте его в текущем браузере на рабочем столе (например, Chrome, Edge или Яндекс браузер).
-Выберите исходный .dgdat файл.
-Дождитесь проверки подписи GDF, границы CRC и кандидатов на дату.
-Просмотрите обнаруженных кандидатов на дату и предполагаемые роли.
-Выберите новую bd дату.
-Подтвердите сопоставление обнаруженных дат.
-Click “Сформировать новую DGDat”.
-Сохраните исходный файл без изменений и протестируйте сгенерированную копию отдельно.
-Сохраните профиль JSON и сообщите, если вам нужна запись эксперимента.
-Локальный сервер не требуется. Утилите не нужно подключение к интернету.
+It checks that:
 
-Содержимое репозитория
-Рекомендуемый минимальный макет репозитория:
+- the output CRC fields match fresh calculations;
+- date values can be read back;
+- no other byte within the discovered header boundary was changed;
+- the output file size matches the input size.
 
+The output is assembled as a new `Blob` from the modified header and a `File.slice()` of the original payload. The map payload is copied as-is; it is not decompressed, decoded, or rebuilt.
+
+### 5. Large-file handling
+
+The application reads only the beginning of the file (up to 64 KiB) for discovery and header editing.
+
+The remaining file content is passed through as a slice of the original `File`, rather than being loaded into one large JavaScript `ArrayBuffer`. This reduces memory pressure when handling large `.dgdat` files.
+
+Actual browser and operating-system download limits still apply.
+
+### 6. Diagnostic exports
+
+The utility can export:
+
+- a discovered-profile JSON file containing the offsets, date serials, deltas, and CRC boundary;
+- a report JSON file describing the detected input, output metadata, date mapping, CRC ranges, and checks performed.
+
+## Quick start
+
+1. Download `DGDat_Date_Lab_Updater_v3.html`.
+2. Open it in a current desktop browser (for example, Chrome, Edge, or Yandex Browser).
+3. Select the original `.dgdat` file.
+4. Wait for the GDF signature, CRC boundary, and date candidates to be examined.
+5. Review the detected date candidates and inferred roles.
+6. Select the new `bd` date.
+7. Confirm the detected date mapping.
+8. Click **“Сформировать новую DGDat”**.
+9. Keep the original file unchanged and test the generated copy separately.
+10. Save the JSON profile and report if you need a record of the experiment.
+
+No local server is required. The utility does not need an internet connection.
+
+## Repository contents
+
+Suggested minimal repository layout:
+
+```text
 dgdat-date-lab-updater/
 ├── DGDat_Date_Lab_Updater_v3.html
 ├── README.md
 ├── LICENSE
 └── .gitignore
-Приложение намеренно распространяется в виде одного HTML-файла, чтобы его можно было открыть локально без установки пакетов или настройки среды сборки.
+```
 
-Примечания к техническому формату
-Текущая реализация основана на следующем наблюдаемом контуре:
+The application is intentionally distributed as a single HTML file so it can be opened locally without installing packages or setting up a build environment.
 
-Элемент	Текущее предположение
-Подпись файла	07 47 44 46 (GDF)
-Внешнее поле CRC	0x0E, 4 байта, с прямым порядком байтов
-Входные данные для внешнего CRC	[0x12, headerEnd)
-Внутреннее поле CRC	0x15, 4 байта, с прямым порядком байтов
-Входные данные для внутреннего CRC	[0x19, headerEnd)
-Алгоритм CRC	CRC-32/IEEE
-Порядок обновления CRC	внутренний, затем внешний
-Маркер даты	0xC0
-Значение даты	беззнаковый 16-разрядный код с большим порядковым номером
-Эпоха даты	1899-12-30
-Ограничение сканирования при обнаружении	первые 64 КБ
-Окно даты-кандидата	С 2000-01-01 по 2100-01-01
-Диапазон кластера из четырех дат	не более 550 дней
-Наблюдаемые границы выборки:
+## Technical format notes
 
-Семейство выборок	Наблюдаемый конец заголовка
-Norilsk 142.0.0 / 163.0.0	0x154
-Красноярск 250.0.0	0x1A0
-Эти наблюдения следует рассматривать как тестовые, а не как доказательство того, что все файлы с одинаковым названием города или версией используют одинаковый макет.
+The current implementation relies on the following observed envelope:
 
-Модель безопасности и целостности данных
-Приложение спроектировано таким образом, чтобы прекращать работу в случае ошибки:
+| Item | Current assumption |
+|---|---|
+| File signature | `07 47 44 46` (`GDF`) |
+| Outer CRC field | `0x0E`, 4 bytes, big-endian |
+| Outer CRC input | `[0x12, headerEnd)` |
+| Inner CRC field | `0x15`, 4 bytes, big-endian |
+| Inner CRC input | `[0x19, headerEnd)` |
+| CRC algorithm | CRC-32/IEEE |
+| CRC update order | inner, then outer |
+| Date marker | `0xC0` |
+| Date value | unsigned 16-bit, big-endian |
+| Date epoch | `1899-12-30` |
+| Discovery scan limit | first 64 KiB |
+| Candidate-date window | 2000-01-01 to 2100-01-01 |
+| Four-date cluster span | at most 550 days |
 
-Неизвестная сигнатура GDF → остановка.
-Несоответствие CRC → остановка.
-Нет уникальной границы CRC → остановка.
-Нет уникального кластера из четырех дат → остановка.
-Повторяющиеся значения кандидатов в нескольких смещениях → остановка.
-Неверная дата или 16-битное переполнение → остановка.
-Неожиданные изменения в защищенном заголовке → остановка.
-Утилита не исправляет grym.exe, не обходит проверки приложений и не пытается отключить проверку совместимости или целостности в загрузчике 2ГИС.
+Observed sample boundaries:
 
-Успешная локальная проверка CRC лишь подтверждает, что заголовок соответствует реализованному алгоритму вычисления CRC. Она не подтверждает, что вся база данных действительна, совместима с конкретным загрузчиком, актуальна или пригодна для навигации.
+| Sample family | Observed header end |
+|---|---:|
+| Norilsk 142.0.0 / 163.0.0 | `0x154` |
+| Krasnoyarsk 250.0.0 | `0x1A0` |
 
-Ограничения и планы на будущее
-Версия 3.0 не позволяет:
+These observations should be treated as test fixtures, not proof that all files with the same city name or version use the same layout.
 
-анализировать все известные и неизвестные форматы DGDat;
-идентифицировать произвольные кодировки дат;
-определять произвольные алгоритмы CRC, смещения полей, порядок байтов или диапазоны входных данных CRC;
-декодировать или проверять каждый собственный блок картографических данных;
-обновлять содержимое карты или загружать новые географические данные;
-подтверждать совместимость путем запуска целевого приложения Windows;
-гарантировать, что измененная база данных будет совместима со всеми выпусками 2GIS.
-Для нового семейства форматов соберите заведомо исправный оригинальный образец и сравните его с другим образцом из того же семейства. Расширяйте детектор только после того, как проверите структуру заголовка, семантику даты, параметры CRC и поведение загрузчика. Не добавляйте предполагаемый профиль только потому, что последовательность байтов похожа на дату.
+## Safety and data-integrity model
 
-Конфиденциальность
-Вся обработка происходит локально в браузере:
+The application is designed to fail closed:
 
-не используется конечная точка загрузки;
-не используется аналитика или телеметрия;
-не загружаются сторонние библиотеки JavaScript;
-не требуется подключение к сети.
-Выбранная база данных остается на устройстве пользователя. Браузер создает локальную копию для измененной базы данных и диагностики JSON.
+- Unknown GDF signature → stop.
+- CRC mismatch → stop.
+- No unique CRC boundary → stop.
+- No unique four-date cluster → stop.
+- Repeated candidate values at multiple offsets → stop.
+- Invalid date or 16-bit overflow → stop.
+- Unexpected changes in the protected header → stop.
 
-Юридические аспекты и сфера применения проекта
-Это независимая исследовательская утилита. Она не является официальным продуктом 2GIS и не связана с 2GIS и не поддерживается ею.
+The utility does not patch `grym.exe`, bypass application checks, or attempt to disable compatibility or integrity validation in the 2GIS loader.
 
-Не добавляйте в репозиторий коммерческие .dgdat базы данных, проприетарные исполняемые файлы, данные о городах, учетные данные или другие материалы, защищенные авторским правом или конфиденциальные, если у вас нет прав и разрешения на их распространение.
+A successful local CRC check only proves that the header matches the implemented CRC calculation. It does **not** prove that the full database is valid, compatible with a particular loader, current, or suitable for navigation.
 
-Репозиторий должен содержать исходный код инструмента и документацию, а не образцы баз данных карт.
+## Limitations and future work
 
+Version 3.0 does not:
+
+- parse every known or unknown DGDat generation;
+- identify arbitrary date encodings;
+- discover arbitrary CRC algorithms, field offsets, byte order, or CRC input ranges;
+- decode or validate every proprietary map-data block;
+- update map content or download new geographic data;
+- confirm compatibility by launching the target Windows application;
+- guarantee that a modified database will be accepted by every 2GIS release.
+
+For a new format family, collect a known-good original sample and compare it with another sample from the same family. Extend the detector only after confirming the header structure, date semantics, CRC parameters, and loader behaviour. Do not add a guessed profile merely because a byte pattern resembles a date.
+
+## Privacy
+
+All processing happens locally in the browser:
+
+- no upload endpoint is used;
+- no analytics or telemetry are included;
+- no third-party JavaScript libraries are loaded;
+- no network connection is required.
+
+The selected database remains on the user's device. The browser creates a local download for the modified copy and JSON diagnostics.
+
+## Legal and project scope
+
+This is an independent research utility. It is not an official 2GIS product and is not affiliated with or endorsed by 2GIS.
+
+Do not commit commercial `.dgdat` databases, proprietary executables, city map payloads, credentials, or other copyrighted or confidential material to the repository unless you have the rights and authorization to distribute them.
+
+The repository should contain the tool source and documentation, not sample map databases.
+
+## Contributing
+
+Useful contributions include:
+
+- new verified header fixtures (small sanitized headers only, where redistribution is permitted);
+- reproducible CRC test cases;
+- parser improvements with documented evidence;
+- regression tests for known layouts;
+- UI and accessibility improvements;
+- documentation corrections.
+
+Every new automatic profile should include:
+
+1. a known-good input sample or a safely shareable header fixture;
+2. exact date-field offsets and encoding;
+3. exact CRC field offsets, ranges, algorithm, and byte order;
+4. a reproducible expected output header;
+5. a statement of what was tested in the actual loader, if loader compatibility is claimed.
+
+Never claim loader compatibility based on CRC checks alone.
+
+## License
+
+Choose and add a license before publishing. If you want permissive reuse, the MIT License is a common option, but make sure you have the right to license all code and included assets. Do not add a license file until you have selected the intended terms.
